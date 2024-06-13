@@ -2,7 +2,7 @@
 
 //board
 let board;
-let boardWidth = 750;
+let boardWidth = 600;
 let boardHeight = 250;
 let context;
 
@@ -29,6 +29,7 @@ let novotesWidth = 102;
 
 let blockHeight = 70;
 let blockX = 700;
+
 let blockY = boardHeight - blockHeight;
 
 let filibusterImg;
@@ -69,6 +70,9 @@ window.onload = function() {
 
     novotesImg = new Image();
     novotesImg.src = "./img/novotes.png";
+
+    // gavelImg = new Image();
+    // gavelImg.src = "./img/gavel.png";
 
     requestAnimationFrame(update);
     setInterval(placeblock, 1000); //1000 milliseconds = 1 second
@@ -160,6 +164,12 @@ function placeblock() {
         block.width = filibusterWidth;
         blockArray.push(block);
     }
+
+    // else if (placeblockChance > .30) { //30% you get gavel
+    //     block.img = gavelImg;
+    //     block.width = gavelWidth;
+    //     blockArray.push(block);
+    // }
 
     if (blockArray.length > 5) {
         blockArray.shift(); //remove the first element from the array so that the array doesn't constantly grow
