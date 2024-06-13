@@ -1,11 +1,18 @@
 body {
     font-family:'Courier New', Courier, monospace;
     text-align: center;
-    background-color: lightgray;
+    background-color: green;
+/*    background-image: url("./img/capitol.png");
+    max-width: 100%;*/
+/*    background-image: url("./img/capitolpicturepng.png");
+    background-size: cover;*/
+
 
 }
 
 #board {
-    background-color: lightgray;
+    background-color: lightblue;
     border-bottom: 1px solid black;
+    
+  
 }
