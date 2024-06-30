@@ -185,8 +185,8 @@ function detectCollision(a, b) {
         }
     }
 
-    let obstaclePixels;
     const assetName = b.img.src.split('/').at(-1).split('.')[0];
+    let obstaclePixels;
     if (assetName === 'filibuster') {
         obstaclePixels = filibusterPixels;
     } else if (assetName === 'veto') {
@@ -194,29 +194,24 @@ function detectCollision(a, b) {
     } else if (assetName === 'novotes') {
         obstaclePixels = novotesPixels;
     } else {
-        console.log('[Fallback] Using AABB...');
-        return a.x < b.x + b.width &&
-               a.x + a.width > b.x &&
-               a.y < b.y + b.height &&
-               a.y + a.height > b.y;
+        // Fallback in case anything happens with the pixel mask files
+        return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
+           a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
+           a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
+           a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
     }
 
-    // Add block pixels to takenPixels
     for (let y = 0; y < obstaclePixels.length; y++) {
         for (let x = 0; x < obstaclePixels[0].length; x++) {
             if (obstaclePixels[y][x] === 1) {
-                let posX = b.x + x;
-                let posY = b.y + y;
                 for (let i = 0; i < takenPixels.length; i++) {
-                    if (Math.abs(takenPixels[i][0] - posX) < 3 && Math.abs(takenPixels[i][1] - posY) < 3) {
+                    if (Math.abs(takenPixels[i][0] - (b.x + x)) < 3 && Math.abs(takenPixels[i][1] - (b.y + y)) < 3) {
                         return true;
                     }
                 }
             }
         }
     }
-
-    console.log(takenPixels.length)
 
     return false;
 }
