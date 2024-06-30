@@ -1,5 +1,3 @@
-
-
 //board
 let board;
 let boardWidth = 600;
@@ -37,7 +35,7 @@ let vetoImg;
 let novotesImg;
 
 //physics
-let velocityX = -8; //block moving left speed
+let velocityX = -1; //block moving left speed
 let velocityY = 0;
 let gravity = .4;
 
@@ -177,8 +175,48 @@ function placeblock() {
 }
 
 function detectCollision(a, b) {
-    return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
-           a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
-           a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
-           a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+    let takenPixels = [];
+
+    for (let y = 0; y < billPixels.length; y++) {
+        for (let x = 0; x < billPixels[0].length; x++) {
+            if (billPixels[y][x] === 1) {
+                takenPixels.push([a.x + x, a.y + y]);
+            }
+        }
+    }
+
+    let obstaclePixels;
+    const assetName = b.img.src.split('/').at(-1).split('.')[0];
+    if (assetName === 'filibuster') {
+        obstaclePixels = filibusterPixels;
+    } else if (assetName === 'veto') {
+        obstaclePixels = vetoPixels;
+    } else if (assetName === 'novotes') {
+        obstaclePixels = novotesPixels;
+    } else {
+        console.log('[Fallback] Using AABB...');
+        return a.x < b.x + b.width &&
+               a.x + a.width > b.x &&
+               a.y < b.y + b.height &&
+               a.y + a.height > b.y;
+    }
+
+    // Add block pixels to takenPixels
+    for (let y = 0; y < obstaclePixels.length; y++) {
+        for (let x = 0; x < obstaclePixels[0].length; x++) {
+            if (obstaclePixels[y][x] === 1) {
+                let posX = b.x + x;
+                let posY = b.y + y;
+                for (let i = 0; i < takenPixels.length; i++) {
+                    if (Math.abs(takenPixels[i][0] - posX) < 3 && Math.abs(takenPixels[i][1] - posY) < 3) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    console.log(takenPixels.length)
+
+    return false;
 }
