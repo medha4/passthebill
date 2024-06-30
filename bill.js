@@ -35,7 +35,7 @@ let vetoImg;
 let novotesImg;
 
 //physics
-let velocityX = -1; //block moving left speed
+let velocityX = -8; //block moving left speed
 let velocityY = 0;
 let gravity = .4;
 
