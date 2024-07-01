@@ -1,5 +1,3 @@
-
-
 //board
 let board;
 let boardWidth = 600;
@@ -177,8 +175,43 @@ function placeblock() {
 }
 
 function detectCollision(a, b) {
-    return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
+    let takenPixels = [];
+
+    for (let y = 0; y < billPixels.length; y++) {
+        for (let x = 0; x < billPixels[0].length; x++) {
+            if (billPixels[y][x] === 1) {
+                takenPixels.push([a.x + x, a.y + y]);
+            }
+        }
+    }
+
+    const assetName = b.img.src.split('/').at(-1).split('.')[0];
+    let obstaclePixels;
+    if (assetName === 'filibuster') {
+        obstaclePixels = filibusterPixels;
+    } else if (assetName === 'veto') {
+        obstaclePixels = vetoPixels;
+    } else if (assetName === 'novotes') {
+        obstaclePixels = novotesPixels;
+    } else {
+        // Fallback in case anything happens with the pixel mask files
+        return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
            a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
            a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
            a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+    }
+
+    for (let y = 0; y < obstaclePixels.length; y++) {
+        for (let x = 0; x < obstaclePixels[0].length; x++) {
+            if (obstaclePixels[y][x] === 1) {
+                for (let i = 0; i < takenPixels.length; i++) {
+                    if (Math.abs(takenPixels[i][0] - (b.x + x)) < 3 && Math.abs(takenPixels[i][1] - (b.y + y)) < 3) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
 }
