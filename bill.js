@@ -111,9 +111,9 @@ function update() {
 
     //score
     context.fillStyle="black";
-    context.font="20px courier";
+    context.font="20px PressStart2P";
     score++;
-    context.fillText("Score: " + score, 5, 20);
+    context.fillText(score, 520, 30);
 }
 
 function movebill(e) {
