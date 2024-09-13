@@ -1,14 +1,14 @@
 //board
 let board;
 let boardWidth = 600;
-let boardHeight = 250;
+let boardHeight = 300;
 let context;
 
 //bill
-let billWidth = 88;
-let billHeight = 94;
+let billWidth = 100;
+let billHeight = 100;
 let billX = 50;
-let billY = boardHeight - billHeight;
+let billY = boardHeight - billHeight - 50;
 let billImg;
 
 let bill = {
@@ -23,12 +23,12 @@ let blockArray = [];
 
 let filibusterWidth = 70;
 let vetoWidth = 69;
-let novotesWidth = 102;
+let novotesWidth = 75;
 
 let blockHeight = 70;
 let blockX = 700;
 
-let blockY = boardHeight - blockHeight;
+let blockY = boardHeight - blockHeight - 50;
 
 let filibusterImg;
 let vetoImg;
@@ -36,11 +36,21 @@ let novotesImg;
 
 //physics
 let velocityX = -8; //block moving left speed
+// let velocityX = -20; //block moving left speed
 let velocityY = 0;
 let gravity = .4;
 
 let gameOver = false;
 let score = 0;
+
+let highscore = 0;
+let scores = decodeURIComponent(document.cookie).split('=');
+console.log(scores)
+
+if(scores.length > 1){
+    console.log(highscore)
+    highscore = scores[1];
+}
 
 
 window.onload = function() {
@@ -50,31 +60,32 @@ window.onload = function() {
 
     context = board.getContext("2d"); //used for drawing on the board
 
+    
     // draw initial bill
-    context.fillStyle="blue";
     context.fillRect(bill.x, bill.y, bill.width, bill.height);
 
     billImg = new Image();
-    billImg.src = "./img/bill.png";
+    billImg.src = "./img/pagebill.png";
     billImg.onload = function() {
         context.drawImage(billImg, bill.x, bill.y, bill.width, bill.height);
     }
 
     filibusterImg = new Image();
-    filibusterImg.src = "./img/filibuster.png";
+    filibusterImg.src = "./img/talking.png";
 
     vetoImg = new Image();
-    vetoImg.src = "./img/veto.png";
+    vetoImg.src = "./img/voter.png";
 
     novotesImg = new Image();
-    novotesImg.src = "./img/novotes.png";
+    novotesImg.src = "./img/gavel_black.png"
 
-    // gavelImg = new Image();
-    // gavelImg.src = "./img/gavel.png";
+
 
     requestAnimationFrame(update);
     setInterval(placeblock, 1000); //1000 milliseconds = 1 second
+
     document.addEventListener("keydown", movebill);
+    
 }
 
 function update() {
@@ -83,11 +94,15 @@ function update() {
         return;
     }
     context.clearRect(0, 0, board.width, board.height);
+    drawLine(context, 0, 250, 600, 250, '#4A4A4A', 2);
+   
 
     //bill
     velocityY += gravity;
     bill.y = Math.min(bill.y + velocityY, billY); //apply gravity to current bill.y, making sure it doesn't exceed the ground
     context.drawImage(billImg, bill.x, bill.y, bill.width, bill.height);
+
+
 
     //block
     for (let i = 0; i < blockArray.length; i++) {
@@ -97,9 +112,15 @@ function update() {
 
         if (detectCollision(bill, block)) {
             gameOver = true;
-            billImg.src = "./img/bill-dead.png";
+            // billImg.src = "./img/bill-dead.png";
+            if(score > highscore){
+                document.cookie = "highscore=" + score + ";";
+
+            }
+
+            console.log("highscore", highscore, score)
            
-            if(confirm('Score: ' +score+'\nYou shall not pass! Reload to try')){
+            if(confirm('Score: ' +score+'\n\nYou shall not pass! Click OK to try again.')){
                 window.location.reload();  
                 
             }
@@ -111,9 +132,10 @@ function update() {
 
     //score
     context.fillStyle="black";
-    context.font="20px PressStart2P";
+    context.font="15px PressStart2P";
     score++;
-    context.fillText(score, 520, 30);
+    context.fillText("Current Score: " + score, 315, 30);
+    context.fillText("High Score: " + highscore, 15, 30);
 }
 
 function movebill(e) {
@@ -163,16 +185,31 @@ function placeblock() {
         blockArray.push(block);
     }
 
-    // else if (placeblockChance > .30) { //30% you get gavel
-    //     block.img = gavelImg;
-    //     block.width = gavelWidth;
-    //     blockArray.push(block);
-    // }
-
     if (blockArray.length > 5) {
         blockArray.shift(); //remove the first element from the array so that the array doesn't constantly grow
     }
 }
+
+function drawLine(ctx, x1, y1, x2,y2, stroke = 'black', width = 3) {
+        // start a new path
+        ctx.beginPath();
+
+        // place the cursor from the point the line should be started 
+        ctx.moveTo(x1, y1);
+
+        // draw a line from current cursor position to the provided x,y coordinate
+        ctx.lineTo(x2, y2);
+
+        // set strokecolor
+        ctx.strokeStyle = stroke;
+
+        // set lineWidht 
+        ctx.lineWidth = width;
+
+        // add stroke to the line 
+        ctx.stroke();
+      }
+
 
 function detectCollision(a, b) {
     let takenPixels = [];
